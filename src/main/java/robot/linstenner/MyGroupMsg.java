@@ -99,8 +99,8 @@ public class MyGroupMsg {
                     bs.append(l).append("\n");
                 }
                 content = bs.toString();
-                System.out.println("content=============="+content);
-                System.out.println("content=============="+content.getClass().toString());
+                System.out.println("content============"+content);
+                System.out.println("content============"+content.getClass().toString());
             }
 
 
