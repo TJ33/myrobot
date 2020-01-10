@@ -75,46 +75,43 @@ public class MyGroupMsg {
     public void onGroupRobotReply(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
             CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
-            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(), XiaoIApi.getReply(groupMsg.getMsg()));
+//            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(), XiaoIApi.getReply(groupMsg.getMsg()));
             CQCode cqCode = cqCodeUtil.getCQCode_Image("1.jpg");
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),cqCode+"");
-            System.out.println("结果111---------------"+cqCode);
-
-            //get请求
-            String content = null;
-            URLConnection urlConnection = new URL("http://api.bilibili.com/archive_stat/stat?aid=82574994&type=jsonp").openConnection();
-            System.out.println("urlConnection=============="+urlConnection);
-            HttpURLConnection connection = (HttpURLConnection) urlConnection;
-            connection.setRequestMethod("GET");
-            //连接
-            connection.connect();
-            //得到响应码
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader
-                        (connection.getInputStream(), StandardCharsets.UTF_8));
-                StringBuilder bs = new StringBuilder();
-                String l;
-                while ((l = bufferedReader.readLine()) != null) {
-                    bs.append(l).append("\n");
-                }
-                content = bs.toString();
-                System.out.println("content============"+content);
-                System.out.println("content============"+content.getClass().toString());
-            }
-
+            System.out.println("结果111---------------"+cqCode.toString());
 
 
         }
     }
 
     //B站粉丝数监听
-    @Listen(MsgGetTypes.groupMsg)
-    public void getFollowers(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
-        if(groupMsg.getGroup().equals("709284916")) {
-
-        }
-    }
+//    @Listen(MsgGetTypes.groupMsg)
+//    public void getFollowers(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+//        if(groupMsg.getGroup().equals("709284916")) {
+//            //get请求
+//            String content = null;
+//            URLConnection urlConnection = new URL("http://api.bilibili.com/archive_stat/stat?aid=82574994&type=jsonp").openConnection();
+//            System.out.println("urlConnection=============="+urlConnection);
+//            HttpURLConnection connection = (HttpURLConnection) urlConnection;
+//            connection.setRequestMethod("GET");
+//            //连接
+//            connection.connect();
+//            //得到响应码
+//            int responseCode = connection.getResponseCode();
+//            if (responseCode == HttpURLConnection.HTTP_OK) {
+//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader
+//                        (connection.getInputStream(), StandardCharsets.UTF_8));
+//                StringBuilder bs = new StringBuilder();
+//                String l;
+//                while ((l = bufferedReader.readLine()) != null) {
+//                    bs.append(l).append("\n");
+//                }
+//                content = bs.toString();
+//                System.out.println("content============"+content);
+//                System.out.println("content============"+content.getClass().toString());
+//            }
+//        }
+//    }
 
 
   //欢迎新人入群监听
