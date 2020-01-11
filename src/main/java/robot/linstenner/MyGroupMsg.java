@@ -66,21 +66,20 @@ public class MyGroupMsg {
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),em+" 你在想桃子");
             CQCode cqCode = cqCodeUtil.getCQCode_Image("1.jpg");
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),cqCode+"");
-            System.out.println("结果111---------------"+cqCode);
+            System.out.println("结果1---------------"+cqCode);
         }
     }
 
     //关键字监听
     @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="墨汐傲",keywordMatchType = KeywordMatchType.RE_CQCODE_REGEX,mostType = MostType.ANY_MATCH)
     public void onGroupRobotReply(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
             CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
 //            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(), XiaoIApi.getReply(groupMsg.getMsg()));
             CQCode cqCode = cqCodeUtil.getCQCode_Image("1.jpg");
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),cqCode+"");
-            System.out.println("结果111---------------"+cqCode.toString());
-
-
+            System.out.println("结果1---------------"+cqCode.toString());
         }
     }
 
