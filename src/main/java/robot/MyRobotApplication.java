@@ -12,7 +12,7 @@ public class MyRobotApplication implements LemocApp {
         linkConfiguration.setLocalQQNick("直男77号");
         linkConfiguration.setLocalQQCode("2635195492");
 //        linkConfiguration.setCqPath("F:\\酷Q\\酷Q Air\\酷Q Air");
-        linkConfiguration.setCqPath("F:\\酷Q\\酷Q图灵\\酷Q Pro");
+        linkConfiguration.setCqPath("F:\\酷Q\\酷Q pro图灵版\\酷Q Pro");
     }
 
     public void after(CQCodeUtil cqCodeUtil, MsgSender sender) {

@@ -1,5 +1,8 @@
 package robot.linstenner;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forte.qqrobot.anno.Filter;
 import com.forte.qqrobot.anno.Listen;
 import com.forte.qqrobot.beans.cqcode.CQCode;
@@ -12,15 +15,17 @@ import com.forte.qqrobot.beans.types.KeywordMatchType;
 import com.forte.qqrobot.beans.types.MostType;
 import com.forte.qqrobot.sender.MsgSender;
 import com.forte.qqrobot.utils.CQCodeUtil;
+import robot.api.Reply;
 import robot.api.XiaoIApi;
+import robot.model.UpUser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -99,34 +104,16 @@ public class MyGroupMsg {
 
     //B站粉丝数监听
     @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="战斗吧歌姬",keywordMatchType = KeywordMatchType.RE_CQCODE_REGEX,mostType = MostType.ANY_MATCH)
     public void getFollowers(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
-            //get请求
-            String content = null;
-//            URLConnection urlConnection = new URL("http://api.bilibili.com/archive_stat/stat?aid=82574994&type=jsonp").openConnection();
-            URLConnection urlConnection = new URL("https://api.bilibili.com/x/relation/stat?vmid=364225566&jsonp=jsonp").openConnection();
-            //https://api.bilibili.com/x/relation/stat?vmid=364225566&jsonp=jsonp&callback=__jp4
-//            vmid: 364225566
-//            jsonp: jsonp
-            System.out.println("urlConnection=============="+urlConnection);
-            HttpURLConnection connection = (HttpURLConnection) urlConnection;
-            connection.setRequestMethod("GET");
-            //连接
-            connection.connect();
-            //得到响应码
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader
-                        (connection.getInputStream(), StandardCharsets.UTF_8));
-                StringBuilder bs = new StringBuilder();
-                String l;
-                while ((l = bufferedReader.readLine()) != null) {
-                    bs.append(l).append("\n");
-                }
-                content = bs.toString();
-                System.out.println("content============"+content);
-                System.out.println("content============"+content.getClass().toString());
-            }
+            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/relation/stat?vmid=364225566&jsonp=jsonp");
+            String follower = jsonObject.getString("follower"); //粉丝数
+            String following = jsonObject.getString("following");  //关注数
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            String date = sdf.format(new Date());
+            String message = "截止到"+date+"  战斗吧歌姬的粉丝数为"+follower;
+            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
         }
     }
 
@@ -245,5 +232,31 @@ public class MyGroupMsg {
             String fileBusid = groupFileUpload.getFileBusid();
             System.out.print("fileBusid================================="+fileBusid);
         }
+    }
+
+    //封装请求
+    public JSONObject jsonObject(String url) throws IOException {
+        JSONObject data = new JSONObject();
+        //get请求
+        String content = "";
+        URLConnection urlConnection = new URL(url).openConnection();
+        HttpURLConnection connection = (HttpURLConnection) urlConnection;
+        connection.setRequestMethod("GET");
+        //连接
+        connection.connect();
+        //得到响应码
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+            StringBuilder bs = new StringBuilder();
+            String l;
+            while ((l = bufferedReader.readLine()) != null) {
+                bs.append(l).append("\n");
+            }
+            content = bs.toString();
+            JSONObject jsonObject = JSON.parseObject(content);
+            data = jsonObject.getJSONObject("data");
+        }
+        return data;
     }
 }
