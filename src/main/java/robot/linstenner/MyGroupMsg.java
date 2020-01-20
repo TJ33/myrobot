@@ -66,54 +66,72 @@ public class MyGroupMsg {
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),em+" 你在想桃子");
             CQCode cqCode = cqCodeUtil.getCQCode_Image("1.jpg");
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),cqCode+"");
-            System.out.println("结果1---------------"+cqCode);
+            System.out.println("结果老婆111---------------"+cqCode);
         }
     }
 
-    //关键字监听
+    //关键字监听 发送图片
     @Listen(MsgGetTypes.groupMsg)
-    @Filter(value="墨汐傲",keywordMatchType = KeywordMatchType.RE_CQCODE_REGEX,mostType = MostType.ANY_MATCH)
+    @Filter(value="墨汐图片",keywordMatchType = KeywordMatchType.RE_CQCODE_REGEX,mostType = MostType.ANY_MATCH)
     public void onGroupRobotReply(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
             CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
 //            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(), XiaoIApi.getReply(groupMsg.getMsg()));
+            //发送图片
             CQCode cqCode = cqCodeUtil.getCQCode_Image("1.jpg");
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),cqCode+"");
-            System.out.println("结果1---------------"+cqCode.toString());
+            System.out.println("结果墨汐图片111---------------"+cqCode.toString());
+        }
+    }
+
+    //关键字监听 发送语音
+    @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="贝拉语音",keywordMatchType = KeywordMatchType.RE_CQCODE_REGEX,mostType = MostType.ANY_MATCH)
+    public void onGroupRobotReplyYY(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        if(groupMsg.getGroup().equals("709284916")) {
+//            CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
+//            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(), XiaoIApi.getReply(groupMsg.getMsg()));
+            //发送语音
+            CQCode cqCode = cqCodeUtil.getCQCode_Record("相信.mp3",false);
+            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),cqCode+"");
         }
     }
 
     //B站粉丝数监听
-//    @Listen(MsgGetTypes.groupMsg)
-//    public void getFollowers(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
-//        if(groupMsg.getGroup().equals("709284916")) {
-//            //get请求
-//            String content = null;
+    @Listen(MsgGetTypes.groupMsg)
+    public void getFollowers(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        if(groupMsg.getGroup().equals("709284916")) {
+            //get请求
+            String content = null;
 //            URLConnection urlConnection = new URL("http://api.bilibili.com/archive_stat/stat?aid=82574994&type=jsonp").openConnection();
-//            System.out.println("urlConnection=============="+urlConnection);
-//            HttpURLConnection connection = (HttpURLConnection) urlConnection;
-//            connection.setRequestMethod("GET");
-//            //连接
-//            connection.connect();
-//            //得到响应码
-//            int responseCode = connection.getResponseCode();
-//            if (responseCode == HttpURLConnection.HTTP_OK) {
-//                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader
-//                        (connection.getInputStream(), StandardCharsets.UTF_8));
-//                StringBuilder bs = new StringBuilder();
-//                String l;
-//                while ((l = bufferedReader.readLine()) != null) {
-//                    bs.append(l).append("\n");
-//                }
-//                content = bs.toString();
-//                System.out.println("content============"+content);
-//                System.out.println("content============"+content.getClass().toString());
-//            }
-//        }
-//    }
+            URLConnection urlConnection = new URL("https://api.bilibili.com/x/relation/stat?vmid=364225566&jsonp=jsonp").openConnection();
+            //https://api.bilibili.com/x/relation/stat?vmid=364225566&jsonp=jsonp&callback=__jp4
+//            vmid: 364225566
+//            jsonp: jsonp
+            System.out.println("urlConnection=============="+urlConnection);
+            HttpURLConnection connection = (HttpURLConnection) urlConnection;
+            connection.setRequestMethod("GET");
+            //连接
+            connection.connect();
+            //得到响应码
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader
+                        (connection.getInputStream(), StandardCharsets.UTF_8));
+                StringBuilder bs = new StringBuilder();
+                String l;
+                while ((l = bufferedReader.readLine()) != null) {
+                    bs.append(l).append("\n");
+                }
+                content = bs.toString();
+                System.out.println("content============"+content);
+                System.out.println("content============"+content.getClass().toString());
+            }
+        }
+    }
 
 
-  //欢迎新人入群监听
+    //欢迎新人入群监听
     @Listen(MsgGetTypes.groupMemberIncrease)
     public void groupMemberIncrease(GroupMemberIncrease groupMemberIncrease, MsgSender msgSender, CQCodeUtil cqCodeUtil){
         if(groupMemberIncrease.getGroup().equals("709284916")) {
