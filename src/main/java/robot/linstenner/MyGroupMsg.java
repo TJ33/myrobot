@@ -152,6 +152,16 @@ public class MyGroupMsg {
         }
     }
 
+    //音频 https://api.bilibili.com/audio/music-service/web/song/upper?uid=364225566&pn=1&ps=30&order=1&jsonp=jsonp
+    //详情 https://www.bilibili.com/audio/music-service-c/web/song/info?sid=1189888
+
+    //专栏 https://api.bilibili.com/x/space/article?mid=364225566&pn=1&ps=12&sort=publish_time&jsonp=jsonp&callback=__jp7
+    //详情 https://api.bilibili.com/x/article/viewinfo?id=4411335&mobi_app=pc&jsonp=jsonp
+
+
+    //相簿 https://api.vc.bilibili.com/link_draw/v1/doc/doc_list?uid=364225566&page_num=0&page_size=30&biz=all
+    //详情 https://api.vc.bilibili.com/link_draw/v1/doc/detail?doc_id=49448310
+
 
 
 
