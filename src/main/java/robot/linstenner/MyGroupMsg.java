@@ -1,8 +1,8 @@
 package robot.linstenner;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forte.qqrobot.anno.Filter;
 import com.forte.qqrobot.anno.Listen;
 import com.forte.qqrobot.beans.cqcode.CQCode;
@@ -15,9 +15,6 @@ import com.forte.qqrobot.beans.types.KeywordMatchType;
 import com.forte.qqrobot.beans.types.MostType;
 import com.forte.qqrobot.sender.MsgSender;
 import com.forte.qqrobot.utils.CQCodeUtil;
-import robot.api.Reply;
-import robot.api.XiaoIApi;
-import robot.model.UpUser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,8 +23,7 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
+
 
 
 public class MyGroupMsg {
@@ -64,7 +60,7 @@ public class MyGroupMsg {
 
     //关键字监听
     @Listen(MsgGetTypes.groupMsg)
-    @Filter(value="老婆",keywordMatchType = KeywordMatchType.RE_CQCODE_REGEX,mostType = MostType.ANY_MATCH)
+    @Filter(value="老婆",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void onGroupMsg(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil){
         if(groupMsg.getGroup().equals("709284916")) {
             CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
@@ -77,7 +73,7 @@ public class MyGroupMsg {
 
     //关键字监听 发送图片
     @Listen(MsgGetTypes.groupMsg)
-    @Filter(value="墨汐图片",keywordMatchType = KeywordMatchType.RE_CQCODE_REGEX,mostType = MostType.ANY_MATCH)
+    @Filter(value="墨汐图片",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void onGroupRobotReply(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
             CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
@@ -91,7 +87,7 @@ public class MyGroupMsg {
 
     //关键字监听 发送语音
     @Listen(MsgGetTypes.groupMsg)
-    @Filter(value="贝拉语音",keywordMatchType = KeywordMatchType.RE_CQCODE_REGEX,mostType = MostType.ANY_MATCH)
+    @Filter(value="贝拉语音",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void onGroupRobotReplyYY(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
 //            CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
@@ -104,7 +100,7 @@ public class MyGroupMsg {
 
     //B站粉丝数监听
     @Listen(MsgGetTypes.groupMsg)
-    @Filter(value="战斗吧歌姬",keywordMatchType = KeywordMatchType.RE_CQCODE_REGEX,mostType = MostType.ANY_MATCH)
+    @Filter(value="战斗吧歌姬",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void getFollowers(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
             JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/relation/stat?vmid=364225566&jsonp=jsonp");
@@ -116,6 +112,48 @@ public class MyGroupMsg {
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
         }
     }
+
+    //B站视频相关
+    @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="视频",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+    public void getVedio(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        Integer index = 0;
+        if(groupMsg.getGroup().equals("709284916")) {
+            String msg = groupMsg.getMsg();
+            String[] indexArray = msg.split("视频");
+            if(indexArray.length==2){
+                index = Integer.parseInt(indexArray[1]);
+            }
+            JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/arc/search?mid=364225566&ps=30&tid=0&pn=1&keyword=&order=pubdate&jsonp=jsonp");
+            JSONObject resultList = vedioResult.getJSONObject("list");
+            JSONArray vedioList = resultList.getJSONArray("vlist");
+            String aid = vedioList.getJSONObject(index).getString("aid");
+            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/web-interface/view?aid="+aid);
+            JSONObject stat = jsonObject.getJSONObject("stat"); //分区id
+            String title = jsonObject.getString("title");  //视频标题
+            String desc = jsonObject.getString("desc");    //视频简介
+            String view = stat.getString("view");          //播放量
+            String danmaku = stat.getString("danmaku");    //弹幕数
+            String reply = stat.getString("reply");        //评论数
+            String favorite = stat.getString("favorite");  //收藏数
+            String coin = stat.getString("coin");           //硬币数
+            String share = stat.getString("share");         //分享数
+            String now_rank = stat.getString("now_rank");
+            String his_rank = stat.getString("his_rank");
+            String like = stat.getString("like");            //点赞数
+            String dislike = stat.getString("dislike");
+            String evaluation = stat.getString("evaluation");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            String date = sdf.format(new Date());
+            String message = "截止到"+date+"\n"+title+"\n"+"播放量为  "+view+"\n"+"点赞数为  "+share+"\n"+"硬币数为  "+coin+"\n"+"收藏数为  "+favorite+"\n"+"分享数为  "+share+"\n"+"弹幕数为  "+danmaku+"\n"+"评论数为  "+reply;
+
+//          String message = "截止到"+date+"\n"+title+":  "+desc+"\n"+"播放量为"+view+"\n"+"点赞数为"+share+"\n"+"硬币数为"+coin+"\n"+"收藏数为"+favorite+"\n"+"分享数为"+share+"\n"+"弹幕数为"+danmaku+"\n"+"评论数为"+reply;
+            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
+        }
+    }
+
+
+
 
 
     //欢迎新人入群监听
