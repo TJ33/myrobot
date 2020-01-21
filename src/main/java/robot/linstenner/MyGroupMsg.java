@@ -117,7 +117,7 @@ public class MyGroupMsg {
     @Listen(MsgGetTypes.groupMsg)
     @Filter(value="视频",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void getVedio(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
-        Integer index = 0;
+        Integer index = 1;
         if(groupMsg.getGroup().equals("709284916")) {
             String msg = groupMsg.getMsg();
             String[] indexArray = msg.split("视频");
@@ -127,7 +127,7 @@ public class MyGroupMsg {
             JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/arc/search?mid=364225566&ps=30&tid=0&pn=1&keyword=&order=pubdate&jsonp=jsonp");
             JSONObject resultList = vedioResult.getJSONObject("list");
             JSONArray vedioList = resultList.getJSONArray("vlist");
-            String aid = vedioList.getJSONObject(index).getString("aid");
+            String aid = vedioList.getJSONObject(index-1).getString("aid");
             JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/web-interface/view?aid="+aid);
             JSONObject stat = jsonObject.getJSONObject("stat"); //分区id
             String title = jsonObject.getString("title");  //视频标题
