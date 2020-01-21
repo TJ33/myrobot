@@ -145,7 +145,7 @@ public class MyGroupMsg {
             String evaluation = stat.getString("evaluation");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             String date = sdf.format(new Date());
-            String message = "截止到"+date+"\n"+title+"\n"+"播放量为  "+view+"\n"+"点赞数为  "+share+"\n"+"硬币数为  "+coin+"\n"+"收藏数为  "+favorite+"\n"+"分享数为  "+share+"\n"+"弹幕数为  "+danmaku+"\n"+"评论数为  "+reply;
+            String message = "截止到"+date+"\n"+title+"\n"+"https://www.bilibili.com/video/av"+aid+"\n"+"播放量为  "+view+"\n"+"点赞数为  "+share+"\n"+"硬币数为  "+coin+"\n"+"收藏数为  "+favorite+"\n"+"分享数为  "+share+"\n"+"弹幕数为  "+danmaku+"\n"+"评论数为  "+reply;
 
 //          String message = "截止到"+date+"\n"+title+":  "+desc+"\n"+"播放量为"+view+"\n"+"点赞数为"+share+"\n"+"硬币数为"+coin+"\n"+"收藏数为"+favorite+"\n"+"分享数为"+share+"\n"+"弹幕数为"+danmaku+"\n"+"评论数为"+reply;
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
