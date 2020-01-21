@@ -297,4 +297,18 @@ public class MyGroupMsg {
         }
         return data;
     }
+
+    //监听B站动态
+    @Listen(MsgGetTypes.groupMsg)
+    public void getDynamic(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        if(groupMsg.getGroup().equals("709284916")) {
+            JSONObject jsonObject = this.jsonObject("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_num?uid=3805255&type=268435455&rsp_type=1&current_dynamic_id=346935900419269691&update_num_dy_id=346935900419269691");
+            System.out.print("jsonObject=============================="+jsonObject+"\n");
+            String new_num = jsonObject.getString("new_num");
+            String update_num = jsonObject.getString("update_num");
+            JSONObject extra_flag  = jsonObject.getJSONObject("extra_flag");
+            String unlogin_dynamics = extra_flag.getString("unlogin_dynamics");
+//            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),"yooooo发布了一条新动态");
+        }
+    }
 }
