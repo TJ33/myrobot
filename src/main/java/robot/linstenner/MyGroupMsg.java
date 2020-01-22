@@ -77,7 +77,7 @@ public class MyGroupMsg {
     public void onGroupRobotReply(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
             CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
-//            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(), XiaoIApi.getReply(groupMsg.getMsg()));
+//            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(), XiaoIApi.getReply(groupMsg.getMsg()));  //复读机
             //发送图片
             CQCode cqCode = cqCodeUtil.getCQCode_Image("1.jpg");
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),cqCode+"");
@@ -103,7 +103,7 @@ public class MyGroupMsg {
     @Filter(value="战斗吧歌姬",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void getFollowers(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
-            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/relation/stat?vmid=364225566&jsonp=jsonp");
+            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/relation/stat?vmid=364225566&jsonp=jsonp","视频");
             String follower = jsonObject.getString("follower"); //粉丝数
             String following = jsonObject.getString("following");  //关注数
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -124,11 +124,11 @@ public class MyGroupMsg {
             if(indexArray.length==2){
                 index = Integer.parseInt(indexArray[1]);
             }
-            JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/arc/search?mid=364225566&ps=30&tid=0&pn=1&keyword=&order=pubdate&jsonp=jsonp");
+            JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/arc/search?mid=364225566&ps=30&tid=0&pn=1&keyword=&order=pubdate&jsonp=jsonp","视频");
             JSONObject resultList = vedioResult.getJSONObject("list");
             JSONArray vedioList = resultList.getJSONArray("vlist");
             String aid = vedioList.getJSONObject(index-1).getString("aid");
-            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/web-interface/view?aid="+aid);
+            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/web-interface/view?aid="+aid,"视频");
             JSONObject stat = jsonObject.getJSONObject("stat"); //分区id
             String title = jsonObject.getString("title");  //视频标题
             String desc = jsonObject.getString("desc");    //视频简介
@@ -151,6 +151,107 @@ public class MyGroupMsg {
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
         }
     }
+
+    //B站音频相关
+    @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="音频",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+    public void getAudio(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        Integer index = 1;
+        if(groupMsg.getGroup().equals("709284916")) {
+//            String msg = groupMsg.getMsg();
+//            String[] indexArray = msg.split("音频");
+//            if(indexArray.length==2){
+//                index = Integer.parseInt(indexArray[1]);
+//            }
+            JSONObject audioResult = this.jsonObject("https://api.bilibili.com/audio/music-service/web/song/upper?uid=364225566&pn=1&ps=30&order=1&jsonp=jsonp","音频");
+            System.out.println("audioResult==================================="+audioResult);
+            JSONObject audioObjcet = audioResult.getJSONObject("data");
+            JSONArray jsonArray = audioObjcet.getJSONArray("data");
+            JSONObject statistic = jsonArray.getJSONObject(1).getJSONObject("statistic");
+            String sid = statistic.getString("sid");
+            System.out.println("sid======================================="+sid);
+            JSONObject jsonObject = this.jsonObject("https://www.bilibili.com/audio/music-service-c/web/song/info?sid="+sid,"音频");
+            System.out.println("jsonObject======================================"+jsonObject);
+
+//            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
+        }
+    }
+
+    //B站专栏相关
+    @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="专栏",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+    public void getArticle(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        Integer index = 1;
+        if(groupMsg.getGroup().equals("709284916")) {
+            String msg = groupMsg.getMsg();
+            String[] indexArray = msg.split("专栏");
+            if(indexArray.length==2){
+                index = Integer.parseInt(indexArray[1]);
+            }
+            JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/article?mid=364225566&pn=1&ps=12&sort=publish_time&jsonp=jsonp","专栏");
+            JSONArray jsonArray = vedioResult.getJSONArray("articles");
+            String id = jsonArray.getJSONObject(index-1).getString("id");
+            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/article/viewinfo?id="+id+"&mobi_app=pc&jsonp=jsonp","专栏");
+
+            String author_name = jsonObject.getString("author_name");   //发专栏UP
+            String banner_url = jsonObject.getString("banner_url");     //封面图
+            String title = jsonObject.getString("title");                //专栏标题
+            JSONObject stats = jsonObject.getJSONObject("stats");             //统计数据相关
+            String view = stats.getString("view");                       //阅读量
+            String favorite = stats.getString("favorite");              //收藏
+            String like = stats.getString("like");                      //点赞
+            String dislike = stats.getString("dislike");
+            String reply = stats.getString("reply");                    //评论
+            String share = stats.getString("share");                    //分享
+            String coin = stats.getString("coin");                      //硬币
+            String dynamic = stats.getString("dynamic");
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            String date = sdf.format(new Date());
+            String message = "截止到"+date+"\n"+title+"\n"+"https://www.bilibili.com/read/cv"+id+"\n"+"阅读量为  "+view+"\n"+"点赞数为  "+like+"\n"+"硬币数为  "+coin+"\n"+"收藏数为  "+favorite+"\n"+"分享数为  "+share+"\n"+"评论数为  "+reply;
+            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
+        }
+    }
+
+    //B站相簿相关
+    @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="相簿",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+    public void getDoc(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        Integer index = 1;
+        if(groupMsg.getGroup().equals("709284916")) {
+            String msg = groupMsg.getMsg();
+            String[] indexArray = msg.split("相簿");
+            if(indexArray.length==2){
+                index = Integer.parseInt(indexArray[1]);
+            }
+            JSONObject vedioResult = this.jsonObject("https://api.vc.bilibili.com/link_draw/v1/doc/doc_list?uid=364225566&page_num=0&page_size=30&biz=all","相簿");
+            JSONArray jsonArray = vedioResult.getJSONArray("items");
+            String doc_id = jsonArray.getJSONObject(index-1).getString("doc_id");
+            JSONObject jsonObject = this.jsonObject("https://api.vc.bilibili.com/link_draw/v1/doc/detail?doc_id="+doc_id,"相簿");
+            JSONObject itemJsonObject = jsonObject.getJSONObject("item");
+            JSONArray picturesArray = itemJsonObject.getJSONArray("pictures");                 //图片
+            String title = itemJsonObject.getString("title");                                  //标题
+            String description = itemJsonObject.getString("description");                     //描述
+            String view_count = itemJsonObject.getString("view_count");                       //阅读量
+            String collect_count = itemJsonObject.getString("collect_count");                 //收藏
+            String vote_count = itemJsonObject.getString("vote_count");                       //点赞
+            String dislike = itemJsonObject.getString("dislike");
+            String comment_count = itemJsonObject.getString("comment_count");                //评论
+            String upload_time = itemJsonObject.getString("upload_time");                    //发出时间
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            String date = sdf.format(new Date());
+            String message = "";
+            System.out.println("title----"+title);
+            if(title.length()==0){
+                message = "截止到"+date+"\n"+"https://h.bilibili.com/"+doc_id+"\n"+"阅读量为  "+view_count+"\n"+"点赞数为  "+vote_count+"\n"+"收藏数为  "+collect_count;
+            }else{
+                message = "截止到"+date+"\n"+title+"\n"+"https://h.bilibili.com/"+doc_id+"\n"+"阅读量为  "+view_count+"\n"+"点赞数为  "+vote_count+"\n"+"收藏数为  "+collect_count;
+            }
+            System.out.println("message================================="+message);
+            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
+        }
+    }
+
 
     //音频 https://api.bilibili.com/audio/music-service/web/song/upper?uid=364225566&pn=1&ps=30&order=1&jsonp=jsonp
     //详情 https://www.bilibili.com/audio/music-service-c/web/song/info?sid=1189888
@@ -283,7 +384,7 @@ public class MyGroupMsg {
     }
 
     //封装请求
-    public JSONObject jsonObject(String url) throws IOException {
+    public JSONObject jsonObject(String url,String type) throws IOException {
         JSONObject data = new JSONObject();
         //get请求
         String content = "";
@@ -302,17 +403,23 @@ public class MyGroupMsg {
                 bs.append(l).append("\n");
             }
             content = bs.toString();
-            JSONObject jsonObject = JSON.parseObject(content);
-            data = jsonObject.getJSONObject("data");
+
+            if(type=="视频"||type=="专栏"||type=="相簿"){
+                JSONObject jsonObject = JSON.parseObject(content);
+                data = jsonObject.getJSONObject("data");
+            }else if(type=="音频"){
+                data = JSON.parseObject(content);
+            }
         }
         return data;
     }
 
     //监听B站动态
     @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="所有人",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void getDynamic(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         if(groupMsg.getGroup().equals("709284916")) {
-            JSONObject jsonObject = this.jsonObject("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_num?uid=3805255&type=268435455&rsp_type=1&current_dynamic_id=346935900419269691&update_num_dy_id=346935900419269691");
+            JSONObject jsonObject = this.jsonObject("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_num?uid=3805255&type=268435455&rsp_type=1&current_dynamic_id=346935900419269691&update_num_dy_id=346935900419269691","视频");
             System.out.print("jsonObject=============================="+jsonObject+"\n");
             String new_num = jsonObject.getString("new_num");
             String update_num = jsonObject.getString("update_num");
