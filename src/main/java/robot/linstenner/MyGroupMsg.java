@@ -158,22 +158,23 @@ public class MyGroupMsg {
     public void getAudio(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         Integer index = 1;
         if(groupMsg.getGroup().equals("709284916")) {
-//            String msg = groupMsg.getMsg();
-//            String[] indexArray = msg.split("音频");
-//            if(indexArray.length==2){
-//                index = Integer.parseInt(indexArray[1]);
-//            }
-            JSONObject audioResult = this.jsonObject("https://api.bilibili.com/audio/music-service/web/song/upper?uid=364225566&pn=1&ps=30&order=1&jsonp=jsonp","音频");
-            System.out.println("audioResult==================================="+audioResult);
+            String msg = groupMsg.getMsg();
+            String[] indexArray = msg.split("音频");
+            if(indexArray.length==2){
+                index = Integer.parseInt(indexArray[1]);
+            }
+            JSONObject audioResult = this.jsonObject("https://api.bilibili.com/audio/music-service/web/song/upper?uid=364225566&pn=1&ps=30&order=1&jsonp=jsonp","音频1");
             JSONObject audioObjcet = audioResult.getJSONObject("data");
             JSONArray jsonArray = audioObjcet.getJSONArray("data");
-            JSONObject statistic = jsonArray.getJSONObject(1).getJSONObject("statistic");
-            String sid = statistic.getString("sid");
-            System.out.println("sid======================================="+sid);
-            JSONObject jsonObject = this.jsonObject("https://www.bilibili.com/audio/music-service-c/web/song/info?sid="+sid,"音频");
-            System.out.println("jsonObject======================================"+jsonObject);
-
-//            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
+            String sid = jsonArray.getJSONObject(index-1).getString("id");
+//            JSONObject statistic = jsonArray.getJSONObject(1).getJSONObject("statistic");
+//            String sid = statistic.getString("sid");
+//            System.out.println("sid======================================="+sid);
+            //118969
+//            JSONObject jsonObject = this.jsonObject("https://www.bilibili.com/audio/music-service-c/web/song/info?sid="+sid,"音频2");
+//            System.out.println("jsonObject======================================"+jsonObject);
+            String message = "音频地址为"+"https://www.bilibili.com/audio/au"+sid+"?type=3";
+            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
         }
     }
 
@@ -247,7 +248,6 @@ public class MyGroupMsg {
             }else{
                 message = "截止到"+date+"\n"+title+"\n"+"https://h.bilibili.com/"+doc_id+"\n"+"阅读量为  "+view_count+"\n"+"点赞数为  "+vote_count+"\n"+"收藏数为  "+collect_count;
             }
-            System.out.println("message================================="+message);
             msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
         }
     }
@@ -396,19 +396,45 @@ public class MyGroupMsg {
         //得到响应码
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-            StringBuilder bs = new StringBuilder();
-            String l;
-            while ((l = bufferedReader.readLine()) != null) {
-                bs.append(l).append("\n");
+            if(type=="视频"||type=="专栏"||type=="相簿"||type=="音频1"){
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+                System.out.println("bufferedReader====================================="+bufferedReader);
+                StringBuilder bs = new StringBuilder();
+                String l;
+                while ((l = bufferedReader.readLine()) != null) {
+                    System.out.println("bufferedReader.readLine====================================="+bufferedReader.readLine());
+                    bs.append(l).append("\n");
+                }
+                System.out.println("bs=================================="+bs);
+                content = bs.toString();
+            }else{
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+                System.out.println("bufferedReader111111====================================="+bufferedReader);
+                StringBuilder bs = new StringBuilder();
+                String l;
+                while ((l = bufferedReader.readLine()) != null) {
+                    System.out.println("bufferedReader.readLine111111====================================="+bufferedReader.readLine());
+                    bs.append(l).append("\n");
+                }
+                System.out.println("bs=================================="+bs);
+                content = bs.toString();
             }
-            content = bs.toString();
+
+
+
 
             if(type=="视频"||type=="专栏"||type=="相簿"){
                 JSONObject jsonObject = JSON.parseObject(content);
                 data = jsonObject.getJSONObject("data");
-            }else if(type=="音频"){
+            }else if(type=="音频1"){
                 data = JSON.parseObject(content);
+                System.out.println("音频1================================="+data);
+            }else if(type=="音频2"){
+                System.out.println("音频2================================="+content);
+                JSONObject jsonObject = JSON.parseObject(content);
+                System.out.println("音频2================================="+jsonObject);
+                data = jsonObject.getJSONObject("data");
+                System.out.println("音频2================================="+data);
             }
         }
         return data;
