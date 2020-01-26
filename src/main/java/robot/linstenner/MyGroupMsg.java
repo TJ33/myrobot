@@ -189,10 +189,10 @@ public class MyGroupMsg {
             if(indexArray.length==2){
                 index = Integer.parseInt(indexArray[1]);
             }
-            JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/article?mid=364225566&pn=1&ps=12&sort=publish_time&jsonp=jsonp","专栏");
+            JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/Article?mid=364225566&pn=1&ps=12&sort=publish_time&jsonp=jsonp","专栏");
             JSONArray jsonArray = vedioResult.getJSONArray("articles");
             String id = jsonArray.getJSONObject(index-1).getString("id");
-            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/article/viewinfo?id="+id+"&mobi_app=pc&jsonp=jsonp","专栏");
+            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/Article/viewinfo?id="+id+"&mobi_app=pc&jsonp=jsonp","专栏");
 
             String author_name = jsonObject.getString("author_name");   //发专栏UP
             String banner_url = jsonObject.getString("banner_url");     //封面图
