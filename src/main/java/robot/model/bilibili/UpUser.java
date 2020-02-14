@@ -1,4 +1,4 @@
-package robot.model;
+package robot.model.bilibili;
 
 public class UpUser {
     private Integer mid;          //B站mid

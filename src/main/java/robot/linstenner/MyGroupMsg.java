@@ -15,6 +15,10 @@ import com.forte.qqrobot.beans.types.KeywordMatchType;
 import com.forte.qqrobot.beans.types.MostType;
 import com.forte.qqrobot.sender.MsgSender;
 import com.forte.qqrobot.utils.CQCodeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import robot.model.bilibili.UpUser;
+import robot.services.bilibili.UpUserService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,10 +27,13 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-
-
+@Controller
 public class MyGroupMsg {
+
+    @Autowired
+    private UpUserService upUserService;
 
     //准备输入动态
     //https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_num?uid=3805255&type=268435455&rsp_type=1&current_dynamic_id=342345864571194547&update_num_dy_id=342345864571194547
@@ -63,11 +70,18 @@ public class MyGroupMsg {
     @Filter(value="老婆",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void onGroupMsg(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil){
         if(groupMsg.getGroup().equals("709284916")) {
-            CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
-            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),em+" 你在想桃子");
-            CQCode cqCode = cqCodeUtil.getCQCode_Image("1.jpg");
-            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),cqCode+"");
-            System.out.println("结果老婆111---------------"+cqCode);
+//            CQCode em = cqCodeUtil.getCQCode_Emoji("128513");
+//            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),em+" 你在想桃子");
+//            CQCode cqCode = cqCodeUtil.getCQCode_Image("1.jpg");
+//            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),cqCode+"");
+//            System.out.println("结果老婆111---------------"+cqCode);
+            String test = upUserService.test();
+            System.out.println("test==============================================="+test);
+            List<UpUser> list = upUserService.findUpUserList();
+            System.out.println("list==============================================="+list);
+            for(int i = 0;i<list.size();i++){
+                System.out.println("list i=========================="+list.get(i));
+            }
         }
     }
 

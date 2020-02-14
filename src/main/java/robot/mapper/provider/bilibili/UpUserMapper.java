@@ -1,14 +1,14 @@
-package robot.mapper.provider;
+package robot.mapper.provider.bilibili;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import robot.model.UpUser;
+import robot.model.bilibili.UpUser;
 
 import java.util.List;
 
 @Mapper
 public interface UpUserMapper {
 
-    @Select("SELECT * FROM UPUSER")
+    @Select("SELECT * FROM user")
     List<UpUser> findAll();
 }
