@@ -15,14 +15,17 @@ import com.forte.qqrobot.beans.types.KeywordMatchType;
 import com.forte.qqrobot.beans.types.MostType;
 import com.forte.qqrobot.sender.MsgSender;
 import com.forte.qqrobot.utils.CQCodeUtil;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ResponseBody;
 import robot.model.bilibili.UpUser;
 import robot.services.bilibili.UpUserService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -64,6 +67,194 @@ public class MyGroupMsg {
     // "_gt_":0
     // }
     // }
+
+    //动态监听
+    public void dynamicList() throws IOException {
+            JSONObject vedioResult = this.jsonObject("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=3805255&host_uid=364225566&offset_dynamic_id=0&need_top=1","");
+            System.out.println("vedioResult================================"+vedioResult);
+            JSONArray jsonArray = vedioResult.getJSONArray("cards");
+            System.out.println("jsonArray================================"+jsonArray);
+            for(int i = 0;i<1;i++){
+                JSONObject extendJsonObject = jsonArray.getJSONObject(i);
+                JSONObject cardObject = extendJsonObject.getJSONObject("card");
+                System.out.println("cardObject=================================="+cardObject);
+                JSONObject owner = cardObject.getJSONObject("owner");
+
+                //区分是转载还是自己投稿
+                if(owner!=null){
+                    Long aid = cardObject.getLong("aid");
+                    Long attribute = cardObject.getLong("attribute");
+                    Long cid = cardObject.getLong("cid");
+                    Integer copyright = cardObject.getInteger("copyright");
+                    Long ctime = cardObject.getLong("ctime");
+                    String desc = cardObject.getString("desc");
+                    JSONObject dimension = cardObject.getJSONObject("dimension");
+                    Integer duration = cardObject.getInteger("duration");
+                    String dynamic = cardObject.getString("dynamic");
+                    String jump_url = cardObject.getString("jump_url");
+                    String pic = cardObject.getString("pic");
+                    JSONObject player_info = cardObject.getJSONObject("player_info");
+                    Long pubdate = cardObject.getLong("pubdate");
+                    JSONObject rights = cardObject.getJSONObject("rights");
+                    JSONObject stat = cardObject.getJSONObject("stat");
+                    Integer state = cardObject.getInteger("state");
+                    Integer tid = cardObject.getInteger("tid");
+                    String title = cardObject.getString("title");
+                    String tname = cardObject.getString("tname");
+                    Integer videos = cardObject.getInteger("videos");
+                    System.out.println("owner=================================="+owner);
+                    System.out.println("aid=================================="+aid);
+                    System.out.println("attribute=================================="+attribute);
+                    System.out.println("cid=================================="+cid);
+                    System.out.println("copyright=================================="+copyright);
+                    System.out.println("ctime=================================="+ctime);
+                    System.out.println("desc=================================="+desc);
+                    System.out.println("dimension=================================="+dimension);
+                    System.out.println("duration=================================="+duration);
+                    System.out.println("dynamic=================================="+dynamic);
+                    System.out.println("jump_url=================================="+jump_url);
+                    System.out.println("pic=================================="+pic);
+                    System.out.println("player_info=================================="+player_info);
+                    System.out.println("pubdate=================================="+pubdate);
+                    System.out.println("rights=================================="+rights);
+                    System.out.println("stat=================================="+stat);
+                    System.out.println("state=================================="+state);
+                    System.out.println("tid=================================="+tid);
+                    System.out.println("title=================================="+title);
+                    System.out.println("tname=================================="+tname);
+                    System.out.println("videos=================================="+videos);
+                    System.out.println("------------------------------------------------------------------------自己投稿"+"\n");
+                    System.out.println("------------------------------------------------------------------------自己投稿"+"\n");
+                    String message = "啊啊啊啊啊这是小妹的视频:"+title+"\n"+"视频地址:"+"https://www.bilibili.com/video/av"+aid+"\n"+"封面图:"+pic;
+                }else{
+                    JSONObject item = cardObject.getJSONObject("item");
+                    String content = item.getString("content");
+                    JSONObject origin_extend_json = cardObject.getJSONObject("origin_extend_json");
+                    JSONObject origin = cardObject.getJSONObject("origin");
+                    JSONObject origin_user = cardObject.getJSONObject("origin_user");
+                    JSONObject vip = cardObject.getJSONObject("vip");
+                    JSONObject pendant = cardObject.getJSONObject("pendant");
+                    JSONObject card = cardObject.getJSONObject("card");
+                    JSONObject info = cardObject.getJSONObject("info");
+                    JSONObject user = cardObject.getJSONObject("user");
+                    System.out.println("item=================================="+item);
+                    System.out.println("content=================================="+content);
+                    System.out.println("origin_extend_json=================================="+origin_extend_json);
+                    System.out.println("origin=================================="+origin);
+                    System.out.println("origin_user=================================="+origin_user);
+                    System.out.println("vip=================================="+vip);
+                    System.out.println("pendant=================================="+pendant);
+                    System.out.println("card=================================="+card);
+                    System.out.println("info=================================="+info);
+                    System.out.println("user=================================="+user);
+                    System.out.println("------------------------------------------------------------------------自己转载"+"\n");
+                    System.out.println("------------------------------------------------------------------------自己转载"+"\n");
+                    String message = "啊啊啊啊啊这是小妹的动态:"+content;
+                }
+            }
+    }
+
+
+
+    //动态监听
+    @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="动态",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+    public void dynamicHistory(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        if(groupMsg.getGroup().equals("709284916")) {
+            JSONObject vedioResult = this.jsonObject("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?visitor_uid=3805255&host_uid=364225566&offset_dynamic_id=0&need_top=1","");
+            System.out.println("vedioResult================================"+vedioResult);
+            JSONArray jsonArray = vedioResult.getJSONArray("cards");
+            System.out.println("jsonArray================================"+jsonArray);
+            for(int i = 0;i<jsonArray.size();i++){
+                JSONObject extendJsonObject = jsonArray.getJSONObject(i);
+//                System.out.println("extendJsonObject=================================="+extendJsonObject);
+                JSONObject cardObject = extendJsonObject.getJSONObject("card");
+                System.out.println("cardObject=================================="+cardObject);
+                JSONObject owner = cardObject.getJSONObject("owner");
+
+                //区分是转载还是自己投稿
+                if(owner!=null){
+                    Long aid = cardObject.getLong("aid");
+                    Long attribute = cardObject.getLong("attribute");
+                    Long cid = cardObject.getLong("cid");
+                    Integer copyright = cardObject.getInteger("copyright");
+                    Long ctime = cardObject.getLong("ctime");
+                    String desc = cardObject.getString("desc");
+                    JSONObject dimension = cardObject.getJSONObject("dimension");
+                    Integer duration = cardObject.getInteger("duration");
+                    String dynamic = cardObject.getString("dynamic");
+                    String jump_url = cardObject.getString("jump_url");
+                    String pic = cardObject.getString("pic");
+                    JSONObject player_info = cardObject.getJSONObject("player_info");
+                    Long pubdate = cardObject.getLong("pubdate");
+                    JSONObject rights = cardObject.getJSONObject("rights");
+                    JSONObject stat = cardObject.getJSONObject("stat");
+                    Integer state = cardObject.getInteger("state");
+                    Integer tid = cardObject.getInteger("tid");
+                    String title = cardObject.getString("title");
+                    String tname = cardObject.getString("tname");
+                    Integer videos = cardObject.getInteger("videos");
+                    System.out.println("owner=================================="+owner);
+                    System.out.println("aid=================================="+aid);
+                    System.out.println("attribute=================================="+attribute);
+                    System.out.println("cid=================================="+cid);
+                    System.out.println("copyright=================================="+copyright);
+                    System.out.println("ctime=================================="+ctime);
+                    System.out.println("desc=================================="+desc);
+                    System.out.println("dimension=================================="+dimension);
+                    System.out.println("duration=================================="+duration);
+                    System.out.println("dynamic=================================="+dynamic);
+                    System.out.println("jump_url=================================="+jump_url);
+                    System.out.println("pic=================================="+pic);
+                    System.out.println("player_info=================================="+player_info);
+                    System.out.println("pubdate=================================="+pubdate);
+                    System.out.println("rights=================================="+rights);
+                    System.out.println("stat=================================="+stat);
+                    System.out.println("state=================================="+state);
+                    System.out.println("tid=================================="+tid);
+                    System.out.println("title=================================="+title);
+                    System.out.println("tname=================================="+tname);
+                    System.out.println("videos=================================="+videos);
+                    System.out.println("------------------------------------------------------------------------自己投稿"+"\n");
+                    System.out.println("------------------------------------------------------------------------自己投稿"+"\n");
+                    String message = "啊啊啊啊啊这是小妹的视频:"+title+"\n"+"视频地址:"+"https://www.bilibili.com/video/av"+aid+"\n"+"封面图:"+pic;
+                }else{
+                    JSONObject item = cardObject.getJSONObject("item");
+                    String content = item.getString("content");
+                    JSONObject origin_extend_json = cardObject.getJSONObject("origin_extend_json");
+                    JSONObject origin = cardObject.getJSONObject("origin");
+                    JSONObject origin_user = cardObject.getJSONObject("origin_user");
+                    JSONObject vip = cardObject.getJSONObject("vip");
+                    JSONObject pendant = cardObject.getJSONObject("pendant");
+                    JSONObject card = cardObject.getJSONObject("card");
+                    JSONObject info = cardObject.getJSONObject("info");
+                    JSONObject user = cardObject.getJSONObject("user");
+                    System.out.println("item=================================="+item);
+                    System.out.println("content=================================="+content);
+                    System.out.println("origin_extend_json=================================="+origin_extend_json);
+                    System.out.println("origin=================================="+origin);
+                    System.out.println("origin_user=================================="+origin_user);
+                    System.out.println("vip=================================="+vip);
+                    System.out.println("pendant=================================="+pendant);
+                    System.out.println("card=================================="+card);
+                    System.out.println("info=================================="+info);
+                    System.out.println("user=================================="+user);
+                    System.out.println("------------------------------------------------------------------------自己转载"+"\n");
+                    System.out.println("------------------------------------------------------------------------自己转载"+"\n");
+                    String message = "啊啊啊啊啊这是小妹的动态:"+content;
+                }
+
+
+
+            }
+
+//            JSONArray[] = vedioResult.getJSONArray("cards");
+//            System.out.println("cardJsonObject================================"+cardJsonObject);
+//            JSONObject jsonObjectData = vedioResult.getJSONObject("data");
+//
+//            System.out.println("jsonObjectData================================"+jsonObjectData);
+        }
+    }
 
     //关键字监听
     @Listen(MsgGetTypes.groupMsg)
@@ -132,16 +323,52 @@ public class MyGroupMsg {
     @Filter(value="视频",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void getVedio(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         Integer index = 1;
+        String aid = "";
         if(groupMsg.getGroup().equals("709284916")) {
             String msg = groupMsg.getMsg();
-            String[] indexArray = msg.split("视频");
-            if(indexArray.length==2){
-                index = Integer.parseInt(indexArray[1]);
-            }
-            JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/arc/search?mid=364225566&ps=30&tid=0&pn=1&keyword=&order=pubdate&jsonp=jsonp","视频");
-            JSONObject resultList = vedioResult.getJSONObject("list");
-            JSONArray vedioList = resultList.getJSONArray("vlist");
-            String aid = vedioList.getJSONObject(index-1).getString("aid");
+                System.out.println("视频===================");
+                String[] indexArray = msg.split("视频");
+                if(indexArray.length==2){
+                    index = Integer.parseInt(indexArray[1]);
+                }
+                JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/arc/search?mid=364225566&ps=30&tid=0&pn=1&keyword=&order=pubdate&jsonp=jsonp","视频");
+                JSONObject resultList = vedioResult.getJSONObject("list");
+                JSONArray vedioList = resultList.getJSONArray("vlist");
+                aid = vedioList.getJSONObject(index-1).getString("aid");
+            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/web-interface/view?aid="+aid,"视频");
+            JSONObject stat = jsonObject.getJSONObject("stat"); //分区id
+            String title = jsonObject.getString("title");  //视频标题
+            String desc = jsonObject.getString("desc");    //视频简介
+            String view = stat.getString("view");          //播放量
+            String danmaku = stat.getString("danmaku");    //弹幕数
+            String reply = stat.getString("reply");        //评论数
+            String favorite = stat.getString("favorite");  //收藏数
+            String coin = stat.getString("coin");           //硬币数
+            String share = stat.getString("share");         //分享数
+            String now_rank = stat.getString("now_rank");
+            String his_rank = stat.getString("his_rank");
+            String like = stat.getString("like");            //点赞数
+            String dislike = stat.getString("dislike");
+            String evaluation = stat.getString("evaluation");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            String date = sdf.format(new Date());
+            String message = "截止到"+date+"\n"+title+"\n"+"https://www.bilibili.com/video/av"+aid+"\n"+"播放量为  "+view+"\n"+"点赞数为  "+share+"\n"+"硬币数为  "+coin+"\n"+"收藏数为  "+favorite+"\n"+"分享数为  "+share+"\n"+"弹幕数为  "+danmaku+"\n"+"评论数为  "+reply;
+
+//          String message = "截止到"+date+"\n"+title+":  "+desc+"\n"+"播放量为"+view+"\n"+"点赞数为"+share+"\n"+"硬币数为"+coin+"\n"+"收藏数为"+favorite+"\n"+"分享数为"+share+"\n"+"弹幕数为"+danmaku+"\n"+"评论数为"+reply;
+            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
+        }
+    }
+
+    //B站视频相关
+    @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="av",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+    public void getVedioAV(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        Integer index = 1;
+        String aid = "";
+        if(groupMsg.getGroup().equals("709284916")) {
+            String msg = groupMsg.getMsg();
+            String[] indexArray = msg.split("v");
+            aid = indexArray[1];
             JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/web-interface/view?aid="+aid,"视频");
             JSONObject stat = jsonObject.getJSONObject("stat"); //分区id
             String title = jsonObject.getString("title");  //视频标题
@@ -192,10 +419,59 @@ public class MyGroupMsg {
         }
     }
 
+    //B站音频相关
+    @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="音频",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+    public void getAudioAU(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        Integer index = 1;
+        if(groupMsg.getGroup().equals("709284916")) {
+            String msg = groupMsg.getMsg();
+            String[] indexArray = msg.split("u");
+            String sid = indexArray[1];
+            String message = "音频地址为"+"https://www.bilibili.com/audio/au"+sid+"?type=3";
+            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
+        }
+    }
     //B站专栏相关
     @Listen(MsgGetTypes.groupMsg)
     @Filter(value="专栏",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
     public void getArticle(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+        Integer index = 1;
+        if(groupMsg.getGroup().equals("709284916")) {
+            String msg = groupMsg.getMsg();
+            String[] indexArray = msg.split("专栏");
+            if(indexArray.length==2){
+                index = Integer.parseInt(indexArray[1]);
+            }
+            JSONObject vedioResult = this.jsonObject("https://api.bilibili.com/x/space/Article?mid=364225566&pn=1&ps=12&sort=publish_time&jsonp=jsonp","专栏");
+            JSONArray jsonArray = vedioResult.getJSONArray("articles");
+            String id = jsonArray.getJSONObject(index-1).getString("id");
+            JSONObject jsonObject = this.jsonObject("https://api.bilibili.com/x/Article/viewinfo?id="+id+"&mobi_app=pc&jsonp=jsonp","专栏");
+
+            String author_name = jsonObject.getString("author_name");   //发专栏UP
+            String banner_url = jsonObject.getString("banner_url");     //封面图
+            String title = jsonObject.getString("title");                //专栏标题
+            JSONObject stats = jsonObject.getJSONObject("stats");             //统计数据相关
+            String view = stats.getString("view");                       //阅读量
+            String favorite = stats.getString("favorite");              //收藏
+            String like = stats.getString("like");                      //点赞
+            String dislike = stats.getString("dislike");
+            String reply = stats.getString("reply");                    //评论
+            String share = stats.getString("share");                    //分享
+            String coin = stats.getString("coin");                      //硬币
+            String dynamic = stats.getString("dynamic");
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            String date = sdf.format(new Date());
+            String message = "截止到"+date+"\n"+title+"\n"+"https://www.bilibili.com/read/cv"+id+"\n"+"阅读量为  "+view+"\n"+"点赞数为  "+like+"\n"+"硬币数为  "+coin+"\n"+"收藏数为  "+favorite+"\n"+"分享数为  "+share+"\n"+"评论数为  "+reply;
+            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),message);
+        }
+    }
+
+    //B站专栏相关
+    @Listen(MsgGetTypes.groupMsg)
+    @Filter(value="专栏",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+    public void getArticleCV(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
         Integer index = 1;
         if(groupMsg.getGroup().equals("709284916")) {
             String msg = groupMsg.getMsg();
@@ -449,23 +725,29 @@ public class MyGroupMsg {
                 System.out.println("音频2================================="+jsonObject);
                 data = jsonObject.getJSONObject("data");
                 System.out.println("音频2================================="+data);
+            }else{
+                JSONObject jsonObject = JSON.parseObject(content);
+                data = jsonObject.getJSONObject("data");
             }
         }
         return data;
     }
 
     //监听B站动态
-    @Listen(MsgGetTypes.groupMsg)
-    @Filter(value="所有人",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
-    public void getDynamic(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
-        if(groupMsg.getGroup().equals("709284916")) {
-            JSONObject jsonObject = this.jsonObject("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_num?uid=3805255&type=268435455&rsp_type=1&current_dynamic_id=346935900419269691&update_num_dy_id=346935900419269691","视频");
-            System.out.print("jsonObject=============================="+jsonObject+"\n");
-            String new_num = jsonObject.getString("new_num");
-            String update_num = jsonObject.getString("update_num");
-            JSONObject extra_flag  = jsonObject.getJSONObject("extra_flag");
-            String unlogin_dynamics = extra_flag.getString("unlogin_dynamics");
+//    @Listen(MsgGetTypes.groupMsg)
+//    @Filter(value="所有人",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+//    @ResponseBody
+//    public void getDynamic(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
+//        if(groupMsg.getGroup().equals("709284916")) {
+//            List<UpUser> findUpUserList = upUserService.findUpUserList();
+//            System.out.println("findUpUserList============================"+findUpUserList);
+//            JSONObject jsonObject = this.jsonObject("https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/dynamic_num?uid=3805255&type=268435455&rsp_type=1&current_dynamic_id=346935900419269691&update_num_dy_id=346935900419269691","视频");
+//            System.out.print("jsonObject=============================="+jsonObject+"\n");
+//            String new_num = jsonObject.getString("new_num");
+//            String update_num = jsonObject.getString("update_num");
+//            JSONObject extra_flag  = jsonObject.getJSONObject("extra_flag");
+//            String unlogin_dynamics = extra_flag.getString("unlogin_dynamics");
 //            msgSender.SENDER.sendGroupMsg(groupMsg.getGroup(),"yooooo发布了一条新动态");
-        }
-    }
+//        }
+//    }
 }
