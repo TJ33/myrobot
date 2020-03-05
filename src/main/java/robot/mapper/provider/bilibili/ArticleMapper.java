@@ -1,4 +1,4 @@
-package robot.mapper.provider;
+package robot.mapper.provider.bilibili;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
