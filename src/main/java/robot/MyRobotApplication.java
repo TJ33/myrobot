@@ -9,8 +9,10 @@ import com.forte.qqrobot.utils.CQCodeUtil;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import robot.api.MyJob;
 import robot.model.Article;
+import robot.model.Audio;
 import robot.services.bilibili.ArticleService;
 
 import java.sql.*;
@@ -26,6 +28,10 @@ public class MyRobotApplication implements LemocApp {
         linkConfiguration.setLocalQQCode("2635195492");
 //        linkConfiguration.setCqPath("F:\\酷Q\\酷Q Air\\酷Q Air");
         linkConfiguration.setCqPath("F:\\酷Q\\酷Q pro图灵版\\酷Q Pro");
+
+
+//        List<Article>findArticleList = articleService.findArticleList();
+//        System.out.println("findArticleList============================"+findArticleList);
     }
 
     public void after(CQCodeUtil cqCodeUtil, MsgSender sender) {
