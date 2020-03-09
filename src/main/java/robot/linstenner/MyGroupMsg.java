@@ -15,10 +15,8 @@ import com.forte.qqrobot.beans.types.KeywordMatchType;
 import com.forte.qqrobot.beans.types.MostType;
 import com.forte.qqrobot.sender.MsgSender;
 import com.forte.qqrobot.utils.CQCodeUtil;
-import org.apache.http.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import robot.api.TaskDaily;
 import robot.model.bilibili.UpUser;
 import robot.services.bilibili.UpUserService;
 
@@ -29,9 +27,7 @@ import java.io.PrintWriter;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class MyGroupMsg {
@@ -735,11 +731,17 @@ public class MyGroupMsg {
         return data;
     }
 
+
+
+
     //B站专栏相关
-    @Listen(MsgGetTypes.groupMsg)
-    @Filter(value="每日任务",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
-    public void getDaily(GroupMsg groupMsg, MsgSender msgSender, CQCodeUtil cqCodeUtil) throws IOException {
-        if(groupMsg.getGroup().equals("709284916")) {
+//    @Listen(MsgGetTypes.groupMsg)
+//    @Filter(value="每日任务",keywordMatchType = KeywordMatchType.CONTAINS,mostType = MostType.ANY_MATCH)
+    public void getDaily() throws IOException {
+        Date today = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+        String time = simpleDateFormat.format(today);
+        if(time=="00:00:00"){
             for(int i = 1; i<7; i++){
                 //签到
                 JSONObject check = this.dailyTask("https://starmicro.happyelements.cn/v1/assist/check-in","idol_id="+i,"GET");
@@ -776,6 +778,12 @@ public class MyGroupMsg {
                 System.out.println("关注2个用户4"+followUserFour+"歌姬id="+i);
             }
         }
+
+
+
+        System.out.println("time======================="+time);
+//        if(groupMsg.getGroup().equals("709284916")) {
+//        }
     }
 
     //自动签到打卡
